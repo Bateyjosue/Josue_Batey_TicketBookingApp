@@ -6,8 +6,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 export async function register(req: Request, res: Response) {
   try {
-    console.log(req);
-    const { username, email, password } = req.body;
+    console.log(req.body);
+    const { username, email, password, role } = req.body;
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'Username, email, and password are required.' });
     }
@@ -15,7 +15,8 @@ export async function register(req: Request, res: Response) {
     if (existing) {
       return res.status(409).json({ message: 'User with that email or username already exists.' });
     }
-    const user = new User({ username, email, password, role: 'customer' });
+    const userRole = role || 'customer';
+    const user = new User({ username, email, password, role: userRole });
     await user.save();
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     res.status(201).json({

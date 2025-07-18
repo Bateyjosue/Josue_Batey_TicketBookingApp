@@ -4,7 +4,7 @@ import { register, login } from '../controllers/authController';
 const authRouter: Router = express.Router();
 
 
-authRouter.route('/register').post(register);
+authRouter.post('/register', register);
 authRouter.route('/login').post(login);
 
 
