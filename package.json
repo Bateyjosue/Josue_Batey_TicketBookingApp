@@ -1,5 +1,5 @@
 {
-  "name": ".turbo",
+  "name": "Josue_Batey_TicketBookingApp",
   "private": true,
   "scripts": {
     "build": "turbo run build",
