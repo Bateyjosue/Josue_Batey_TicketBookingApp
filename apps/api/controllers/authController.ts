@@ -6,19 +6,17 @@ const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 export async function register(req: Request, res: Response) {
   try {
+    console.log(req);
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'Username, email, and password are required.' });
     }
-    // Check if user exists
     const existing = await User.findOne({ $or: [{ email }, { username }] });
     if (existing) {
       return res.status(409).json({ message: 'User with that email or username already exists.' });
     }
-    // Create user
     const user = new User({ username, email, password, role: 'customer' });
     await user.save();
-    // Create JWT
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
     res.status(201).json({
       user: { id: user._id, username: user.username, email: user.email, role: user.role },

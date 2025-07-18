@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import { register, login } from '../controllers/authController';
 
-export const authRouter: Router = Router();
+const authRouter: Router = express.Router();
 
-authRouter.post('/register', register);
-authRouter.post('/login', login);
 
-authRouter.post('/test', (req, res) => res.json({ ok: true }));
+authRouter.route('/register').post(register);
+authRouter.route('/login').post(login);
 
-console.log('Auth router loaded');
+
+export default authRouter;
