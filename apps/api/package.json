@@ -10,12 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "express": "^5.1.0",
+    "mongoose": "^8.16.4",
     "nodemon": "^3.1.10"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.3",
+    "dotenv": "^17.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
