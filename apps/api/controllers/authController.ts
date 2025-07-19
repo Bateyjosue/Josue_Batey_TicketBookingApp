@@ -6,7 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
 export async function register(req: Request, res: Response) {
   try {
-    console.log(req.body);
     const { username, email, password, role } = req.body;
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'Username, email, and password are required.' });
