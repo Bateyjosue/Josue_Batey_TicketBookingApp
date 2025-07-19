@@ -7,6 +7,7 @@ import EventDetailPage from './pages/EventDetailPage';
 import Navigation from './components/Navigation';
 import { Toaster } from 'react-hot-toast';
 import { isTokenValid } from './store/useAuthStore';
+import CustomerDashboardPage from './pages/CustomerDashboardPage';
 
 // Placeholder page components
 const BookingsListPage = () => <div>My Bookings Page</div>;
@@ -30,11 +31,9 @@ function AppLayout() {
       {!hideNav && <Navigation />}
       <div className={!hideNav ? 'pt-20' : ''}>
         <Routes>
-          {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          {/* Protected */}
           <Route
             path="/events"
             element={
@@ -68,6 +67,14 @@ function AppLayout() {
             }
           />
           <Route
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <CustomerDashboardPage />
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/admin/events"
             element={
               <RequireAuth>
@@ -84,7 +91,6 @@ function AppLayout() {
             }
           />
 
-          {/* Default route */}
           <Route path="*" element={<Navigate to="/events" replace />} />
         </Routes>
       </div>
