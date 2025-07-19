@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEvent } from '../hooks/useEvent';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import EventSkeleton from '../components/EventSkeleton';
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +19,14 @@ export default function EventDetailPage() {
   const startDate = event?.startDate ? new Date(event.startDate) : event?.date ? new Date(event.date) : null;
   const endDate = event?.endDate ? new Date(event.endDate) : null;
 
-  if (isLoading) return <div className="text-center text-yellow-400 mt-20">Loading event...</div>;
+  if (isLoading) return (
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center py-20">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+        <EventSkeleton />
+        <EventSkeleton />
+      </div>
+    </div>
+  );
   if (error || !event) return <div className="text-center text-red-400 mt-20">Event not found.</div>;
 
   return (

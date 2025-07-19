@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useEvents } from '../hooks/useEvents';
-import { Link, useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
+import EventCard from '../components/EventCard';
+import type { Event } from '../components/EventCard';
 
 function EventSkeleton() {
   return (
@@ -17,7 +19,7 @@ function EventSkeleton() {
 
 const PAGE_SIZE = 9;
 
-function useDebouncedValue(value, delay) {
+function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
   React.useEffect(() => {
     const handler = setTimeout(() => setDebounced(value), delay);
@@ -38,9 +40,9 @@ export default function EventsListPage() {
   const [page, setPage] = useState(1);
   const [showFilterModal, setShowFilterModal] = useState(false);
 
-  const debouncedSearch = useDebouncedValue(search, 300);
+  const debouncedSearch = useDebouncedValue<string>(search, 300);
   const { data: allEvents, isLoading, error } = useEvents(); // fetch all events
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // Filter and search in the frontend
   const filteredEvents = useMemo(() => {
@@ -71,6 +73,16 @@ export default function EventsListPage() {
   const pagedEvents = filteredEvents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   React.useEffect(() => { setPage(1); }, [debouncedSearch, startDate, endDate, minCapacity, maxCapacity, minPrice, maxPrice]);
+
+  function resetFilters() {
+    setSearch('');
+    setStartDate('');
+    setEndDate('');
+    setMinCapacity('');
+    setMaxCapacity('');
+    setMinPrice('');
+    setMaxPrice('');
+  }
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col md:flex-row">
@@ -167,6 +179,12 @@ export default function EventsListPage() {
           </div>
           <hr className="border-zinc-800 my-3" />
         </div>
+        <button
+          className="w-full mt-2 bg-zinc-800 text-yellow-400 font-bold py-2 rounded-lg hover:bg-yellow-700 transition-colors"
+          onClick={resetFilters}
+        >
+          Reset Filters
+        </button>
       </aside>
       {/* Top bar for mobile */}
       <div className="md:hidden flex items-center gap-2 px-4 py-3 bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40">
@@ -275,6 +293,12 @@ export default function EventsListPage() {
             >
               Apply Filters
             </button>
+            <button
+              className="w-full mt-2 bg-zinc-800 text-yellow-400 font-bold py-2 rounded-lg hover:bg-yellow-700 transition-colors"
+              onClick={resetFilters}
+            >
+              Reset Filters
+            </button>
           </div>
         </div>
       )}
@@ -286,30 +310,8 @@ export default function EventsListPage() {
             Array.from({ length: 6 }).map((_, i) => <EventSkeleton key={i} />)
           ) : error ? (
             <div className="col-span-full text-center text-yellow-200">Failed to load events.</div>
-          ) : pagedEvents.length > 0 ? pagedEvents.map((event: any) => (
-            <Link
-              to={`/events/${event._id}`}
-              key={event._id}
-              className="block group"
-            >
-              <div
-                className="bg-gradient-to-br from-zinc-900 via-black to-zinc-900 border-2 border-yellow-700 rounded-2xl shadow-xl p-6 flex flex-col justify-between group-hover:scale-105 transition-transform duration-200 cursor-pointer"
-              >
-                <div>
-                  <h2 className="text-2xl font-bold text-yellow-300 mb-2">{event.title}</h2>
-                  <div className="mb-2 text-yellow-200 font-semibold">{new Date(event.date).toLocaleString()}</div>
-                  <div className="mb-2 text-yellow-100">{event.location}</div>
-                  <div className="mb-4 text-yellow-400 font-bold">${event.price.toFixed(2)}</div>
-                  <p className="text-zinc-300 mb-4 min-h-[60px]">{event.description}</p>
-                </div>
-                <button
-                  className="mt-2 w-full bg-yellow-500 text-black font-bold py-2 rounded-lg shadow-lg hover:bg-yellow-600 transition-colors duration-200"
-                  onClick={e => { e.preventDefault(); navigate(`/events/${event._id}`); }}
-                >
-                  Book
-                </button>
-              </div>
-            </Link>
+          ) : pagedEvents.length > 0 ? pagedEvents.map((event: Event) => (
+            <EventCard key={event._id} event={event} />
           )) : (
             <div className="col-span-full flex flex-col items-center justify-center py-16">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-yellow-700 mb-4">
