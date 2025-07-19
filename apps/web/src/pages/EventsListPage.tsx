@@ -3,6 +3,7 @@ import { useEvents } from '../hooks/useEvents';
 import { useBookings } from '../hooks/useBookings';
 import EventCard from '../components/EventCard';
 import type { Event } from '../components/EventCard';
+import Pagination from '../components/Pagination';
 
 function EventSkeleton() {
   return (
@@ -29,7 +30,6 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 }
 
 export default function EventsListPage() {
-  // Filter state
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -44,7 +44,6 @@ export default function EventsListPage() {
   const { data: allEvents, isLoading, error } = useEvents();
   const { data: allBookings } = useBookings();
 
-  // Map eventId to bookedCount
   const bookedCountMap = useMemo(() => {
     const map: Record<string, number> = {};
     if (Array.isArray(allBookings)) {
@@ -57,7 +56,6 @@ export default function EventsListPage() {
     return map;
   }, [allBookings]);
 
-  // Filter and search in the frontend
   const filteredEvents = useMemo(() => {
     if (!Array.isArray(allEvents)) return [];
     return allEvents.filter(event => {
@@ -80,7 +78,6 @@ export default function EventsListPage() {
     });
   }, [allEvents, debouncedSearch, startDate, endDate, minCapacity, maxCapacity, minPrice, maxPrice]);
 
-  // Pagination
   const total = filteredEvents.length;
   const totalPages = Math.ceil(total / PAGE_SIZE);
   const pagedEvents = filteredEvents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -99,9 +96,7 @@ export default function EventsListPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col md:flex-row">
-      {/* Sidebar (desktop only) */}
       <aside className="w-80 min-h-screen bg-zinc-950 border-r border-zinc-800 p-6 flex-col gap-8 sticky top-0 hidden md:flex">
-        {/* Search */}
         <div>
           <h2 className="text-lg font-bold text-white mb-3">Search</h2>
           <div className="flex items-center gap-0 mb-1">
@@ -120,7 +115,6 @@ export default function EventsListPage() {
           <div className="text-zinc-400 text-xs mb-2">Results depend on active filters</div>
           <hr className="border-zinc-800 my-3" />
         </div>
-        {/* Date */}
         <div>
           <h3 className="text-white font-semibold mb-2">Date</h3>
           <div className="flex gap-2 mb-2 w-full">
@@ -146,7 +140,6 @@ export default function EventsListPage() {
           <div className="text-zinc-400 text-xs mb-2">Pick a selection of date ranges to filter by</div>
           <hr className="border-zinc-800 my-3" />
         </div>
-        {/* Capacity */}
         <div>
           <h3 className="text-white font-semibold mb-2">Capacity</h3>
           <div className="flex gap-2 mb-2">
@@ -169,7 +162,6 @@ export default function EventsListPage() {
           </div>
           <hr className="border-zinc-800 my-3" />
         </div>
-        {/* Price */}
         <div>
           <h3 className="text-white font-semibold mb-2">Price</h3>
           <div className="flex gap-2 mb-2">
@@ -199,7 +191,6 @@ export default function EventsListPage() {
           Reset Filters
         </button>
       </aside>
-      {/* Top bar for mobile */}
       <div className="md:hidden flex items-center gap-2 px-4 py-3 bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40">
         <button
           className={`flex items-center justify-center w-12 h-12 rounded-xl border-2 ${showFilterModal ? 'border-yellow-500' : 'border-zinc-800'} bg-zinc-900 text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400`}
@@ -221,7 +212,6 @@ export default function EventsListPage() {
           </svg>
         </button>
       </div>
-      {/* Filter Modal (mobile) */}
       {showFilterModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
           <div className="bg-zinc-950 rounded-2xl shadow-2xl p-6 w-full max-w-md mx-auto flex flex-col gap-6 relative">
@@ -232,7 +222,6 @@ export default function EventsListPage() {
             >
               &times;
             </button>
-            {/* Date */}
             <div>
               <h3 className="text-white font-semibold mb-2">Date</h3>
               <div className="flex gap-2 mb-2 w-full">
@@ -256,7 +245,6 @@ export default function EventsListPage() {
                 </div>
               </div>
             </div>
-            {/* Capacity */}
             <div>
               <h3 className="text-white font-semibold mb-2">Capacity</h3>
               <div className="flex gap-2 mb-2">
@@ -278,7 +266,6 @@ export default function EventsListPage() {
                 />
               </div>
             </div>
-            {/* Price */}
             <div>
               <h3 className="text-white font-semibold mb-2">Price</h3>
               <div className="flex gap-2 mb-2">
@@ -315,7 +302,6 @@ export default function EventsListPage() {
           </div>
         </div>
       )}
-      {/* Main content */}
       <main className="flex-1 py-12 px-4">
         <h1 className="text-4xl font-extrabold text-yellow-400 mb-10 text-center tracking-wide">All Events</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -343,34 +329,7 @@ export default function EventsListPage() {
             </div>
           )}
         </div>
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-10 gap-2">
-            <button
-              className="px-4 py-2 rounded bg-zinc-800 text-yellow-400 font-bold hover:bg-yellow-700 disabled:opacity-50"
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-            >
-              Prev
-            </button>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                className={`px-4 py-2 rounded font-bold ${page === i + 1 ? 'bg-yellow-500 text-black' : 'bg-zinc-800 text-yellow-400 hover:bg-yellow-700'}`}
-                onClick={() => setPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              className="px-4 py-2 rounded bg-zinc-800 text-yellow-400 font-bold hover:bg-yellow-700 disabled:opacity-50"
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        )}
+        <Pagination page={page} totalPages={totalPages} setPage={setPage} />
       </main>
     </div>
   );
