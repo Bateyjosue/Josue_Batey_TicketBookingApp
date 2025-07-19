@@ -8,27 +8,7 @@ export async function listEvents(req: Request, res: Response) {
     // Deactivate past events
     await Event.updateMany({ date: { $lt: new Date() }, active: true }, { $set: { active: false } });
 
-    // Build filter
-    const filter: any = { active: true, date: { $gte: new Date() } };
-    if (req.query.title) {
-      filter.title = { $regex: req.query.title, $options: 'i' };
-    }
-    if (req.query.location) {
-      filter.location = { $regex: req.query.location, $options: 'i' };
-    }
-    if (req.query.startDate || req.query.endDate) {
-      filter.date = {};
-      if (req.query.startDate) {
-        filter.date.$gte = new Date(req.query.startDate as string);
-      } else {
-        filter.date.$gte = new Date();
-      }
-      if (req.query.endDate) {
-        filter.date.$lte = new Date(req.query.endDate as string);
-      }
-    }
-
-    const events = await Event.find(filter);
+    const events = await Event.find({}); // No filters, just return all
     res.json(events);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch events', error: err });

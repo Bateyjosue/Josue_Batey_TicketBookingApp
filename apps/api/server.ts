@@ -4,7 +4,7 @@ dotenv.config();
 import app from './app';
 import http from 'http';
 
-const port = process.env.PORT || 3003;
+const port = process.env.PORT || 3005;
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/ticketbooking';
 
 const server = http.createServer(app);
