@@ -8,11 +8,12 @@ import Navigation from './components/Navigation';
 import { Toaster } from 'react-hot-toast';
 import { isTokenValid } from './store/useAuthStore';
 import CustomerDashboardPage from './pages/CustomerDashboardPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import { useAuthStore } from './store/useAuthStore';
 
 // Placeholder page components
 const BookingsListPage = () => <div>My Bookings Page</div>;
 const BookingDetailPage = () => <div>Booking Detail Page</div>;
-const AdminEventsPage = () => <div>Admin Events Management</div>;
 const AdminBookingsPage = () => <div>Admin Bookings Management</div>;
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -26,14 +27,17 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 function AppLayout() {
   const location = useLocation();
   const hideNav = location.pathname === '/login' || location.pathname === '/register';
+  const user = useAuthStore(state => state.user);
   return (
     <>
       {!hideNav && <Navigation />}
       <div className={!hideNav ? 'pt-20' : ''}>
         <Routes>
+          {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
+          {/* Protected */}
           <Route
             path="/events"
             element={
@@ -70,15 +74,15 @@ function AppLayout() {
             path="/dashboard"
             element={
               <RequireAuth>
-                <CustomerDashboardPage />
+                {user?.role === 'admin' ? <AdminDashboardPage /> : <CustomerDashboardPage />}
               </RequireAuth>
             }
           />
           <Route
-            path="/admin/events"
+            path="/admin"
             element={
               <RequireAuth>
-                <AdminEventsPage />
+                <AdminDashboardPage />
               </RequireAuth>
             }
           />

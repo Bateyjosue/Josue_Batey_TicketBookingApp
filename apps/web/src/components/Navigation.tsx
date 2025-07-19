@@ -4,10 +4,12 @@ import { useAuthStore } from '../store/useAuthStore';
 
 export default function Navigation() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  console.log(user)
 
   const handleLogout = () => {
     logout();
@@ -53,8 +55,8 @@ export default function Navigation() {
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-lg py-2 flex flex-col z-50">
             <Link
-              to="/dashboard"
-              className="block px-4 py-2 text-sm text-zinc-800 hover:bg-yellow-100"
+              to={user?.role === 'admin' ? '/admin' : '/dashboard'}
+              className="block px-4 py-2 text-sm text-zinc-800 hover:bg-yellow-100 w-full text-left"
               onClick={() => setDropdownOpen(false)}
             >
               Dashboard

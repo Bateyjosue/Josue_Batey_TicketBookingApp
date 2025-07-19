@@ -17,22 +17,37 @@ export default function LoginPage() {
   const setUser = useAuthStore((state) => state.setUser);
 
   const mutation = useMutation(async (data: LoginFormInputs) => {
+    const { emailOrUsername, password } = data;
+    const payload = emailOrUsername.includes('@')
+      ? { email: emailOrUsername, password }
+      : { username: emailOrUsername, password };
     const res = await fetch(`${BASE_URL}/api/v1/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: data.emailOrUsername.includes('@') ? data.emailOrUsername : undefined,
-        username: !data.emailOrUsername.includes('@') ? data.emailOrUsername : undefined,
-        password: data.password
-      })
+      body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error('Login failed');
+    if (!res.ok) {
+      let errorMsg = 'Login failed';
+      try {
+        const errorData = await res.json();
+        if (errorData && errorData.message) errorMsg = errorData.message;
+      } catch { /* ignore JSON parse error */ }
+      throw new Error(errorMsg);
+    }
     return res.json();
   }, {
     onSuccess: (data) => {
+      console.log('Login response:', data);
+      if (!data.user) {
+        console.error('No user in login response:', data);
+      }
       localStorage.setItem('token', data.token);
       setUser(data.user);
-      navigate('/events');
+      if (data.user && data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/events');
+      }
     }
   });
 
