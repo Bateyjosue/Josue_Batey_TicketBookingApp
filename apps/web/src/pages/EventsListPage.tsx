@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useEvents } from '../hooks/useEvents';
-// import { useNavigate } from 'react-router-dom';
+import { useBookings } from '../hooks/useBookings';
 import EventCard from '../components/EventCard';
 import type { Event } from '../components/EventCard';
 
@@ -41,8 +41,21 @@ export default function EventsListPage() {
   const [showFilterModal, setShowFilterModal] = useState(false);
 
   const debouncedSearch = useDebouncedValue<string>(search, 300);
-  const { data: allEvents, isLoading, error } = useEvents(); // fetch all events
-  // const navigate = useNavigate();
+  const { data: allEvents, isLoading, error } = useEvents();
+  const { data: allBookings } = useBookings();
+
+  // Map eventId to bookedCount
+  const bookedCountMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    if (Array.isArray(allBookings)) {
+      allBookings.forEach((b: { status: string; event: { _id: string } }) => {
+        if (b.status === 'booked' && b.event && b.event._id) {
+          map[b.event._id] = (map[b.event._id] || 0) + 1;
+        }
+      });
+    }
+    return map;
+  }, [allBookings]);
 
   // Filter and search in the frontend
   const filteredEvents = useMemo(() => {
@@ -304,15 +317,23 @@ export default function EventsListPage() {
       )}
       {/* Main content */}
       <main className="flex-1 py-12 px-4">
-        <h1 className="text-4xl font-extrabold text-yellow-400 mb-10 text-center tracking-wide">Upcoming Events</h1>
+        <h1 className="text-4xl font-extrabold text-yellow-400 mb-10 text-center tracking-wide">All Events</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {isLoading ? (
             Array.from({ length: 6 }).map((_, i) => <EventSkeleton key={i} />)
           ) : error ? (
             <div className="col-span-full text-center text-yellow-200">Failed to load events.</div>
-          ) : pagedEvents.length > 0 ? pagedEvents.map((event: Event) => (
-            <EventCard key={event._id} event={event} />
-          )) : (
+          ) : pagedEvents.length > 0 ? pagedEvents.map((event: Event) => {
+            const isPast = new Date(event.date) < new Date();
+            const bookedCount = bookedCountMap[event._id] || 0;
+            return (
+              <EventCard
+                key={event._id}
+                event={{ ...event, bookedCount }}
+                disabled={isPast}
+              />
+            );
+          }) : (
             <div className="col-span-full flex flex-col items-center justify-center py-16">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-yellow-700 mb-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-3A2.25 2.25 0 008.25 5.25V9m10.5 0v10.125c0 1.012-.838 1.875-1.875 1.875H7.125A1.875 1.875 0 015.25 19.125V9m13.5 0H5.25m13.5 0a2.25 2.25 0 012.25 2.25v7.125c0 1.012-.838 1.875-1.875 1.875H7.125A1.875 1.875 0 015.25 19.125V11.25A2.25 2.25 0 017.5 9h9a2.25 2.25 0 012.25 2.25V9z" />

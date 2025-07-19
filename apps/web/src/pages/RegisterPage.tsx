@@ -23,7 +23,14 @@ export default function RegisterPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Registration failed');
+    if (!res.ok) {
+      let errorMsg = 'Registration failed';
+      try {
+        const errorData = await res.json();
+        if (errorData && errorData.message) errorMsg = errorData.message;
+      } catch { /* ignore JSON parse error */ }
+      throw new Error(errorMsg);
+    }
     return res.json();
   }, {
     onSuccess: (data) => {
@@ -74,7 +81,11 @@ export default function RegisterPage() {
           >
             {mutation.isLoading ? 'Registering...' : 'Register'}
           </button>
-          {mutation.isError && <div className="text-red-400 mt-4 text-center">Registration failed. Please try again.</div>}
+          {mutation.isError && (
+            <div className="text-red-400 mt-4 text-center">
+              {mutation.error instanceof Error ? mutation.error.message : 'Registration failed. Please try again.'}
+            </div>
+          )}
         </form>
         <div className="mt-8 text-center">
           <span className="text-yellow-200">Already have an account? </span>

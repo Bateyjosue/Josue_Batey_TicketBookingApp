@@ -25,7 +25,6 @@ async function sendEmail(to: string, subject: string, text: string) {
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 }
 
-// POST /bookings - Create a new booking
 export async function createBooking(req: AuthRequest, res: Response) {
   try {
 
@@ -33,32 +32,25 @@ export async function createBooking(req: AuthRequest, res: Response) {
     if (!eventId) {
       return res.status(400).json({ message: 'Event ID is required.' });
     }
-    // Check if event exists
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ message: 'Event not found.' });
     }
-    // Check if event is at capacity
     const bookingCount = await Booking.countDocuments({ event: eventId, status: 'booked' });
     if (bookingCount >= event.capacity) {
       return res.status(400).json({ message: 'Event is fully booked.' });
     }
-    // Prevent booking for past events
     if (new Date(event.date) < new Date()) {
       return res.status(400).json({ message: 'Cannot book past events.' });
     }
-    // Check if already booked
     const existing = await Booking.findOne({ user: req.user!.id, event: eventId, status: 'booked' });
     if (existing) {
       return res.status(409).json({ message: 'You have already booked this event.' });
     }
-    // Create booking
     const booking = new Booking({ user: req.user!.id, event: eventId, status: 'booked' });
     await booking.save();
-    // Send confirmation email (stub)
     const user = await User.findById(req.user!.id);
 
-    console.log(user);
     if (user && user.email) {
         await sendEmail(user.email, 'Booking Confirmation', `You have booked: ${event.title}`);
     }
@@ -68,7 +60,6 @@ export async function createBooking(req: AuthRequest, res: Response) {
   }
 }
 
-// GET /bookings - List all bookings for the logged-in user
 export async function listUserBookings(req: AuthRequest, res: Response) {
   try {
     const bookings = await Booking.find({ user: req.user!.id })
@@ -79,7 +70,6 @@ export async function listUserBookings(req: AuthRequest, res: Response) {
   }
 }
 
-// GET /bookings/:id - Get a single booking for the logged-in user
 export async function getUserBooking(req: AuthRequest, res: Response) {
   try {
     const booking = await Booking.findOne({ _id: req.params.id, user: req.user!.id }).populate('event');
@@ -92,7 +82,6 @@ export async function getUserBooking(req: AuthRequest, res: Response) {
   }
 }
 
-// PUT /bookings/:id - Cancel a booking
 export async function cancelBooking(req: AuthRequest, res: Response) {
   try {
     const booking = await Booking.findOne({ _id: req.params.id, user: req.user!.id }).populate('event');
@@ -104,7 +93,6 @@ export async function cancelBooking(req: AuthRequest, res: Response) {
     }
     booking.status = 'cancelled';
     await booking.save();
-    // Send cancellation email (stub)
 
     const user = await User.findById(req.user!.id);
     if (user && user.email) {

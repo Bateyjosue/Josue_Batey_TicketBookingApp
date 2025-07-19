@@ -1,10 +1,23 @@
 // src/store/useAuthStore.ts
 import { create } from 'zustand';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthState {
   user: { id: string; username: string; email: string; role: string } | null;
   setUser: (user: AuthState['user']) => void;
   logout: () => void;
+}
+
+export function isTokenValid(token: string | null): boolean {
+  if (!token) return false;
+  try {
+    const decoded: { exp?: number } = jwtDecode(token);
+    if (!decoded.exp) return false;
+    // exp is in seconds, Date.now() in ms
+    return decoded.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
 }
 
 export const useAuthStore = create<AuthState>((set) => ({

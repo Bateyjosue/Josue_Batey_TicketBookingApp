@@ -2,11 +2,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEvent } from '../hooks/useEvent';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import EventSkeleton from '../components/EventSkeleton';
+import { useBookEvent } from '../hooks/useBookEvent';
+import toast from 'react-hot-toast';
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: event, isLoading, error } = useEvent(id);
   const navigate = useNavigate();
+  const bookEvent = useBookEvent();
 
   // Assume event.capacity and event.bookedCount are available
   const isSoldOut = event && event.capacity !== undefined && event.bookedCount !== undefined && event.bookedCount >= event.capacity;
@@ -18,6 +21,22 @@ export default function EventDetailPage() {
   // Date logic
   const startDate = event?.startDate ? new Date(event.startDate) : event?.date ? new Date(event.date) : null;
   const endDate = event?.endDate ? new Date(event.endDate) : null;
+
+  const handleBook = () => {
+    if (!event?._id) return;
+    bookEvent.mutate(event._id, {
+      onSuccess: () => {
+        toast.success('Booking successful!');
+      },
+      onError: (err: unknown) => {
+        function hasMessage(e: unknown): e is { message: string } {
+          return typeof e === 'object' && e !== null && 'message' in (e as Record<string, unknown>) && typeof (e as Record<string, unknown>).message === 'string';
+        }
+        const message = hasMessage(err) ? err.message : 'Booking failed';
+        toast.error(message);
+      },
+    });
+  };
 
   if (isLoading) return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center py-20">
@@ -89,9 +108,10 @@ export default function EventDetailPage() {
             </div>
             <button
               className="mt-4 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg shadow-lg hover:bg-yellow-600 transition-colors duration-200 text-lg disabled:opacity-60 disabled:cursor-not-allowed"
-              disabled={isSoldOut}
+              disabled={isSoldOut || bookEvent.isLoading}
+              onClick={handleBook}
             >
-              {isSoldOut ? 'Sold Out' : 'Book'}
+              {isSoldOut ? 'Sold Out' : bookEvent.isLoading ? 'Booking...' : 'Book'}
             </button>
             {isSoldOut && <div className="text-xs text-red-400 mt-2">This event is sold out.</div>}
           </div>
