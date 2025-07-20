@@ -2,29 +2,8 @@ import { Request, Response } from 'express';
 import { Booking } from '../models/Booking';
 import { Event } from '../models/Event';
 import { AuthRequest } from '../middleware/auth';
-import nodemailer from 'nodemailer';
 import { User } from '../models/User';
 import { Resend } from 'resend';
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
-        user: 'cassidy97@ethereal.email',
-        pass: 'pRPunSyWnBzP9DyWk1'
-    }
-});
-// Helper: send email (stub)
-async function sendEmail(to: string, subject: string, text: string) {
-    const info = await transporter.sendMail({
-        from: '"Ticket Booking" <no-reply@yourapp.com>',
-        to,
-        subject,
-        text
-      });
-      console.log('Message sent: %s', info.messageId);
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-}
 
 const EMAIL_KEY = process.env.EMAIL_KEY
 const resend = new Resend(EMAIL_KEY);
@@ -36,7 +15,7 @@ export async function sendBookingEmail(req: Request, res: Response) {
   }
   try {
     const data = await resend.emails.send({
-      from: 'noreply@yourapp.com',
+      from: 'josuebatey19@gmail.com',
       to,
       subject,
       text,
@@ -74,7 +53,17 @@ export async function createBooking(req: AuthRequest, res: Response) {
     const user = await User.findById(req.user!.id);
 
     if (user && user.email) {
-        await sendEmail(user.email, 'Booking Confirmation', `You have booked: ${event.title}`);
+        try {
+          const result = await resend.emails.send({
+            from: 'noreply@ticketapp.com',
+            to: user.email,
+            subject: 'Booking Confirmation',
+            text: `You have booked: ${event.title}`
+          });
+          console.log('Resend booking confirmation result:', result);
+        } catch (err) {
+          console.error('Resend booking confirmation error:', err);
+        }
     }
     res.status(201).json(booking);
   } catch (err) {
@@ -118,7 +107,17 @@ export async function cancelBooking(req: AuthRequest, res: Response) {
 
     const user = await User.findById(req.user!.id);
     if (user && user.email) {
-        await sendEmail(user.email, 'Booking Cancelled', `Your booking for: ${(booking.event as any).title} has been cancelled.`);
+        try {
+          const result = await resend.emails.send({
+            from: 'nnoreply@ticketapp.com',
+            to: user.email,
+            subject: 'Booking Cancelled',
+            text: `Your booking for: ${(booking.event as any).title} has been cancelled.`
+          });
+          console.log('Resend booking cancelled result:', result);
+        } catch (err) {
+          console.error('Resend booking cancelled error:', err);
+        }
     }
     res.json(booking);
   } catch (err) {
