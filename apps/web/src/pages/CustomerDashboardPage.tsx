@@ -42,11 +42,16 @@ export default function CustomerDashboardPage() {
       ) : error ? (
         <div className="text-red-400">Failed to load bookings.</div>
       ) : Array.isArray(bookings) && bookings.length === 0 ? (
-        <div className="text-yellow-200 text-lg">You have no bookings yet.</div>
+        <div className="flex flex-col items-center justify-center py-12">
+          <span className="text-6xl mb-4">🎟️</span>
+          <div className="text-yellow-200 text-lg mb-2">You have no bookings yet.</div>
+          <div className="text-zinc-400">Browse events and book your first ticket!</div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
           {(bookings as Booking[]).map((booking) => {
             const event = booking.event;
+            if (!event) return null;
             const isCancelling = cancellingId === booking._id && cancelBooking.isLoading;
             return (
               <div key={booking._id} className="bg-gradient-to-br from-zinc-900 via-black to-zinc-900 border-2 border-yellow-700 rounded-2xl shadow-xl p-6 flex flex-col justify-between">

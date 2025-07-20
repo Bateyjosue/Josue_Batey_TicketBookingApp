@@ -60,7 +60,9 @@ export default function EventFormModal({ open, onClose, onSubmit, initialValues,
         </button>
         <h2 className="text-2xl font-extrabold text-yellow-400 mb-2 text-center">{initialValues ? 'Edit Event' : 'Create Event'}</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <label htmlFor="event-title" className="text-yellow-300 font-semibold">Title</label>
           <input
+            id="event-title"
             name="title"
             className="bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
             placeholder="Title"
@@ -69,7 +71,9 @@ export default function EventFormModal({ open, onClose, onSubmit, initialValues,
             disabled={loading}
             required
           />
+          <label htmlFor="event-description" className="text-yellow-300 font-semibold">Description</label>
           <textarea
+            id="event-description"
             name="description"
             className="bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400 min-h-[80px]"
             placeholder="Description"
@@ -78,7 +82,9 @@ export default function EventFormModal({ open, onClose, onSubmit, initialValues,
             disabled={loading}
             required
           />
+          <label htmlFor="event-location" className="text-yellow-300 font-semibold">Location</label>
           <input
+            id="event-location"
             name="location"
             className="bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
             placeholder="Location"
@@ -87,7 +93,9 @@ export default function EventFormModal({ open, onClose, onSubmit, initialValues,
             disabled={loading}
             required
           />
+          <label htmlFor="event-date" className="text-yellow-300 font-semibold">Date & Time</label>
           <input
+            id="event-date"
             name="date"
             type="datetime-local"
             className="bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
@@ -98,28 +106,36 @@ export default function EventFormModal({ open, onClose, onSubmit, initialValues,
             required
           />
           <div className="flex gap-2">
-            <input
-              name="capacity"
-              type="number"
-              min={1}
-              className="w-1/2 bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
-              placeholder="Capacity"
-              value={values.capacity}
-              onChange={handleChange}
-              disabled={loading}
-              required
-            />
-            <input
-              name="price"
-              type="number"
-              min={0}
-              className="w-1/2 bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
-              placeholder="Price"
-              value={values.price}
-              onChange={handleChange}
-              disabled={loading}
-              required
-            />
+            <div className="w-1/2 flex flex-col">
+              <label htmlFor="event-capacity" className="text-yellow-300 font-semibold">Capacity</label>
+              <input
+                id="event-capacity"
+                name="capacity"
+                type="number"
+                min={1}
+                className="bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
+                placeholder="Capacity"
+                value={values.capacity}
+                onChange={handleChange}
+                disabled={loading}
+                required
+              />
+            </div>
+            <div className="w-1/2 flex flex-col">
+              <label htmlFor="event-price" className="text-yellow-300 font-semibold">Price</label>
+              <input
+                id="event-price"
+                name="price"
+                type="number"
+                min={0}
+                className="bg-zinc-900 text-white border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-zinc-400"
+                placeholder="Price"
+                value={values.price}
+                onChange={handleChange}
+                disabled={loading}
+                required
+              />
+            </div>
           </div>
           {(formError || error) && <div className="text-red-400 text-center text-sm">{formError || error}</div>}
           <button

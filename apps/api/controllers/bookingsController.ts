@@ -4,6 +4,7 @@ import { Event } from '../models/Event';
 import { AuthRequest } from '../middleware/auth';
 import nodemailer from 'nodemailer';
 import { User } from '../models/User';
+import { Resend } from 'resend';
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
@@ -23,6 +24,27 @@ async function sendEmail(to: string, subject: string, text: string) {
       });
       console.log('Message sent: %s', info.messageId);
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+}
+
+const EMAIL_KEY = process.env.EMAIL_KEY
+const resend = new Resend(EMAIL_KEY);
+
+export async function sendBookingEmail(req: Request, res: Response) {
+  const { to, subject, text } = req.body;
+  if (!to || !subject || !text) {
+    return res.status(400).json({ message: 'to, subject, and text are required.' });
+  }
+  try {
+    const data = await resend.emails.send({
+      from: 'noreply@yourapp.com',
+      to,
+      subject,
+      text,
+    });
+    res.status(200).json({ message: 'Email sent', data });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to send email', error });
+  }
 }
 
 export async function createBooking(req: AuthRequest, res: Response) {
