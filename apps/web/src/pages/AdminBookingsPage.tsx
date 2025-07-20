@@ -1,4 +1,3 @@
-import React from 'react';
 import { useBookings } from '../hooks/useBookings';
 
 export default function AdminBookingsPage() {

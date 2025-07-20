@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -8,8 +8,6 @@ export default function Navigation() {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  console.log(user)
 
   const handleLogout = () => {
     logout();

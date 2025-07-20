@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEventBookings } from '../../hooks/useBookings';
 import type { AdminEvent } from './EventCardAdmin';
 

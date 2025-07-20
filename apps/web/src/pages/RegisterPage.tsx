@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
@@ -94,17 +93,4 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-}
-
-// Tailwind custom colors (add to tailwind.config.js):
-// colors: {
-//   yellow: {
-//     100: '#fff9e5',
-//     200: '#ffe9a7',
-//     300: '#ffd666',
-//     400: '#ffc233',
-//     500: '#ffb300',
-//     600: '#e6a100',
-//     700: '#b37c00',
-//   },
-// }, 
+} 

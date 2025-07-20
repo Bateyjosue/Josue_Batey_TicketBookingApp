@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface AdminEvent {
   _id: string;
   title: string;

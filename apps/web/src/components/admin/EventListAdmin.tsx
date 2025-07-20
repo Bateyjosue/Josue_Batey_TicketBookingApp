@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { AdminEvent } from './EventCardAdmin';
 import EventBookingsModal from './EventBookingsModal';
 

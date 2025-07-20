@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface FilterSidebarProps {
   search: string;
   setSearch: (v: string) => void;

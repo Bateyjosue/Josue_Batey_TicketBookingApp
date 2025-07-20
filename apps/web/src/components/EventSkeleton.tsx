@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function EventSkeleton() {
   return (
     <div className="animate-pulse bg-gradient-to-br from-zinc-900 via-black to-zinc-900 border-2 border-yellow-700 rounded-2xl shadow-xl p-6 flex flex-col justify-between min-h-[260px]">

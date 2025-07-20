@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useBookings, useCancelBooking } from '../hooks/useBookings';
 import toast from 'react-hot-toast';
 

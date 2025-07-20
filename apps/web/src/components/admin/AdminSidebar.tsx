@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const navItems = [
@@ -40,7 +39,6 @@ export default function AdminSidebar() {
         ))}
       </nav>
       <div className="flex-1" />
-      {/* Future: Add user info, settings, or logout here */}
     </aside>
   );
 } 
