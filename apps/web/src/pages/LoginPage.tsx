@@ -36,10 +36,6 @@ export default function LoginPage() {
     return res.json();
   }, {
     onSuccess: (data) => {
-      console.log('Login response:', data);
-      if (!data.user) {
-        console.error('No user in login response:', data);
-      }
       localStorage.setItem('token', data.token);
       setUser(data.user);
       if (data.user && data.user.role === 'admin') {

@@ -16,24 +16,15 @@ export default function AdminDashboardPage() {
   const [editingEvent, setEditingEvent] = useState<AdminEvent | null>(null);
   const [showDelete, setShowDelete] = useState(false);
   const [deletingEvent, setDeletingEvent] = useState<AdminEvent | null>(null);
-//   const [showBookings, setShowBookings] = useState(false);
-//   const [selectedEventForBookings, setSelectedEventForBookings] = useState<AdminEvent | null>(null);
 
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
   const deleteEvent = useDeleteEvent();
 
-  // handleEdit removed
   const handleCreate = () => {
     setEditingEvent(null);
     setShowForm(true);
   };
-  // handleDelete removed
-//   const handleViewBookings = (event: AdminEvent) => {
-//     setSelectedEventForBookings(event);
-//     setShowBookings(true);
-//     toast('Bookings modal coming soon!');
-//   };
 
   const handleFormSubmit = async (values: Omit<AdminEvent, '_id'>) => {
     try {
@@ -65,8 +56,6 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Prepare attendance data for chart
-  type Booking = { event: string };
   const attendanceData = (events && bookings)
     ? (events as AdminEvent[]).map((event: AdminEvent): { title: string; attendance: number } => ({
         title: event.title,
@@ -74,13 +63,11 @@ export default function AdminDashboardPage() {
       }))
     : [];
 
-  // Top 5 events by attendance
   const topEvents = attendanceData
     .slice()
     .sort((a, b) => b.attendance - a.attendance)
     .slice(0, 5);
 
-  // Bookings over time (by date)
   const bookingsOverTime = bookings
     ? bookings.reduce((acc: Record<string, number>, booking: Booking & { createdAt?: string }) => {
         const date = booking.createdAt ? booking.createdAt.slice(0, 10) : 'Unknown';
@@ -154,7 +141,6 @@ export default function AdminDashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-        {/* Events table removed from dashboard home page */}
         <EventFormModal
           open={showForm}
           onClose={() => { setShowForm(false); setEditingEvent(null); }}
@@ -174,10 +160,6 @@ export default function AdminDashboardPage() {
           loading={deleteEvent.isLoading}
           error={deleteEvent.error instanceof Error ? deleteEvent.error.message : null}
         />
-        {/* Bookings modal placeholder */}
-        {/* {showBookings && selectedEventForBookings && (
-          <BookingsModal event={selectedEventForBookings} onClose={() => setShowBookings(false)} />
-        )} */}
       </div>
     </AdminLayout>
   );
