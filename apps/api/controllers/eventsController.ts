@@ -71,4 +71,16 @@ export async function listEventBookings(req: Request, res: Response) {
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch bookings for event', error: err });
   }
-} 
+}
+
+export async function deleteEvent(req: Request, res: Response){
+  try {
+    const event = await Event.deleteOne({_id:req.params.id})
+
+    if(!event) return res.status (404).json({ message: 'Event not found' });
+
+    res.json(event)
+  } catch(err) {
+
+  }
+}

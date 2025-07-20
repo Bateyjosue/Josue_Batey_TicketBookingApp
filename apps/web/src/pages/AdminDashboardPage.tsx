@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useEvents } from '../hooks/useEvents';
 import AdminLayout from '../components/admin/AdminLayout';
 import EventListAdmin from '../components/admin/EventListAdmin';
@@ -50,8 +50,9 @@ export default function AdminDashboardPage() {
       }
       setShowForm(false);
       setEditingEvent(null);
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to save event');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to save event';
+      toast.error(message);
     }
   };
 
@@ -62,8 +63,9 @@ export default function AdminDashboardPage() {
       toast.success('Event deleted!');
       setShowDelete(false);
       setDeletingEvent(null);
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to delete event');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to delete event';
+      toast.error(message);
     }
   };
 
