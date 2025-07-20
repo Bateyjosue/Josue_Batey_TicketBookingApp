@@ -7,8 +7,8 @@ A modern full-stack ticket booking application for events, featuring:
 - **Role-based authentication** (admin/customer)
 - **Event creation, editing, and deletion** (admin)
 - **Booking and cancellation** (customer)
-- **Email notifications** for bookings and cancellations (via Resend)
 - **Responsive, accessible UI** with skeleton loaders and empty states
+- **Email notifications** for bookings and cancellations (via Resend) Not done yet
 
 ---
 
@@ -48,8 +48,8 @@ EMAIL_KEY=your_resend_api_key
   ```
 
 ### 5. Access the app
-- Frontend: [http://localhost:5173](http://localhost:5173)
-- Backend API: [http://localhost:4000](http://localhost:4000)
+- Frontend: [Live Demo](https://josue-batey-ticket-booking-app-web.vercel.app/login)
+- Backend API: [Link](https://josue-batey-ticketbookingapp.onrender.com)
 
 ---
 
@@ -70,7 +70,6 @@ EMAIL_KEY=your_resend_api_key
 PORT=4000
 MONGO_URI=mongodb://localhost:27017/ticketapp
 JWT_SECRET=your_jwt_secret
-EMAIL_KEY=your_resend_api_key
 ```
 
 ---
