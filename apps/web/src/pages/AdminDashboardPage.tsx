@@ -9,6 +9,8 @@ import { useCreateEvent, useUpdateEvent, useDeleteEvent } from '../hooks/useAdmi
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from 'recharts';
 import type { AdminEvent } from '../components/admin/EventCardAdmin';
 
+type Booking = { event: string };
+
 export default function AdminDashboardPage() {
   const { data: events, isLoading } = useEvents();
   const { data: bookings, isLoading: bookingsLoading } = useBookings();
