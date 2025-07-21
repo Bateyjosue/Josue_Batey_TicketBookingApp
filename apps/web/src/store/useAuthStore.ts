@@ -25,3 +25,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user }),
   logout: () => set({ user: null }),
 }));
+
+export async function initializeAuth() {
+  const token = localStorage.getItem('token');
+  if (token && isTokenValid(token)) {
+    try {
+      const BASE_URL = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${BASE_URL}/api/v1/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        useAuthStore.getState().setUser(data.user);
+      } else {
+        localStorage.removeItem('token');
+      }
+    } catch {
+      localStorage.removeItem('token');
+    }
+  }
+}

@@ -1,4 +1,28 @@
 import { useBookings } from '../hooks/useBookings';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-hot-toast';
+
+async function resendBookingEmail(booking) {
+  const BASE_URL = import.meta.env.VITE_API_URL || '';
+  await fetch(`${BASE_URL}/api/v1/bookings/notify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      to: booking.user?.email,
+      subject: 'Booking Confirmation',
+      text: `You have booked: ${booking.event?.title}`
+    }),
+  });
+}
+
+const resendMutation = useMutation(resendBookingEmail, {
+  onSuccess: () => toast.success('Confirmation email resent!'),
+  onError: () => toast.error('Failed to resend email'),
+});
+
+function handleResend(booking) {
+  resendMutation.mutate(booking);
+}
 
 export default function AdminBookingsPage() {
   const { data: bookings, isLoading, error } = useBookings();
@@ -54,16 +78,20 @@ export default function AdminBookingsPage() {
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {bookings.map((booking: { _id: string; event?: { title?: string; date?: string }; user?: { username?: string; email?: string }; status: string }) => (
+              {bookings.filter((booking: { status: string }) => booking.status === 'booked').map((booking: { _id: string; event?: { title?: string; date?: string }; user?: { username?: string; email?: string }; status: string }) => (
                 <tr key={booking._id} className="border-t border-yellow-800 hover:bg-zinc-800">
                   <td className="px-4 py-3 text-yellow-200 align-middle">{booking.event?.title}</td>
                   <td className="px-4 py-3 text-yellow-100 align-middle">{booking.user?.username}</td>
                   <td className="px-4 py-3 text-yellow-100 align-middle">{booking.user?.email}</td>
                   <td className="px-4 py-3 text-yellow-100 align-middle">{booking.status}</td>
                   <td className="px-4 py-3 text-yellow-100 align-middle">{booking.event?.date ? new Date(booking.event.date).toLocaleString() : ''}</td>
+                  <td className="px-4 py-3 text-yellow-100 align-middle">
+                    <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-1 px-3 rounded" onClick={() => handleResend(booking)}>Resend</button>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
 import jwt from 'jsonwebtoken';
+import { AuthRequest } from '../types/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
@@ -45,11 +46,20 @@ export async function login(req: Request, res: Response) {
     }
     // Create JWT
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
-    res.json({
-      user: { id: user._id, username: user.username, email: user.email, role: user.role },
-      token
-    });
+    res.json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
   } catch (err) {
-    res.status(500).json({ message: 'Login failed', error: err });
+    res.status(500).json({ message: 'Server error during login' });
+  }
+}
+
+export async function getMe(req: AuthRequest, res: Response) {
+  try {
+    const user = await User.findById(req.user!.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ user: { id: user._id, username: user.username, email: user.email, role: user.role } });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
   }
 } 

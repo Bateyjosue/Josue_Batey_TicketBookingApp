@@ -7,6 +7,13 @@ interface EventBookingsModalProps {
   event: AdminEvent | null;
 }
 
+type Booking = {
+  _id: string;
+  user?: { username?: string; email?: string };
+  status: string;
+  event?: { title?: string };
+};
+
 export default function EventBookingsModal({ open, onClose, event }: EventBookingsModalProps) {
   const { data: bookings, isLoading, error } = useEventBookings(event?._id);
   if (!open) return null;
@@ -40,7 +47,7 @@ export default function EventBookingsModal({ open, onClose, event }: EventBookin
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking: { _id: string; user?: { username?: string; email?: string }; status: string }) => (
+                {(Array.isArray(bookings) ? (bookings as Booking[]).filter((booking) => booking.status === 'booked') : []).map((booking) => (
                   <tr key={booking._id} className="border-t border-yellow-800 hover:bg-zinc-800">
                     <td className="px-4 py-2 text-yellow-200">{booking.user?.username}</td>
                     <td className="px-4 py-2 text-yellow-100">{booking.user?.email}</td>
